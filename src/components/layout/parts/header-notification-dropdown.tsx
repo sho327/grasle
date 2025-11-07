@@ -83,7 +83,7 @@ export function HeaderNotificationDropdown({
                 >
                     <Bell className="size-4.5" />
                     {unreadCount > 0 && (
-                        <Badge className="absolute -top-0 -right-0 flex h-3 w-3 items-center justify-center bg-red-500 p-1 text-xs text-white">
+                        <Badge className="absolute -top-0 -right-0 flex min-h-3 min-w-3 items-center justify-center bg-red-500 p-0 text-[0.625rem] text-white">
                             {unreadCount > 99 ? '99+' : unreadCount}
                         </Badge>
                     )}

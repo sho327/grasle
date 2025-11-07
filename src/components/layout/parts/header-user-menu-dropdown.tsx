@@ -12,13 +12,15 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 // Hooks
 import { useIsMobile } from '@/hooks/use-mobile'
 // Store
 import { useCommonStore } from '@/store/common'
 // Actions
 import { logout } from '@/actions/authActions'
+// Common/Components
+import { UserAvatar } from '@/components/common/user-avatar'
 
 interface HeaderUserMenuDropdownProps {
     displayUserName: string | null
@@ -57,6 +59,7 @@ export const HeaderUserMenuDropdown = ({
             await logout()
         })
     }
+
     // ============================================================================
     // テンプレート（Template）
     // ============================================================================
@@ -67,35 +70,34 @@ export const HeaderUserMenuDropdown = ({
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="hover:bg-primary/10 hover:text-gray-700"
+                    className="hover:bg-primary/10 relative h-8.5 w-8.5 rounded-full hover:bg-blue-50 hover:text-gray-700"
                 >
-                    <Avatar className="mr-1 h-7.5 w-7.5">
-                        {userIconSrc && (
-                            <AvatarImage src={userIconSrc} alt={`${displayUserName}-icon`} />
-                        )}
-                        {!userIconSrc && (
-                            <AvatarFallback className="bg-gray-400/10 text-sm font-medium">
-                                {displayUserName?.charAt(0)}
-                            </AvatarFallback>
-                        )}
-                    </Avatar>
-                    {!isMobile && displayUserName}
+                    <UserAvatar
+                        name={displayUserName || ''}
+                        avatar={userIconSrc}
+                        level={99}
+                        showLevel={true}
+                        isPremium={true}
+                        showPremium={true}
+                        size="sm"
+                    />
                 </Button>
             </DropdownMenuTrigger>
             {/* ドロップダウンメニュー */}
             <DropdownMenuContent align="end" className="w-56 sm:w-40">
                 {/* ドロップダウンメニュー/ヘッダー */}
-                {isMobile && (
-                    <>
-                        <DropdownMenuLabel>
-                            <div className="flex flex-col space-y-2 px-0.5 py-0.5">
-                                <p className="leading-none font-semibold">{displayUserName}</p>
-                            </div>
-                        </DropdownMenuLabel>
-
-                        <DropdownMenuSeparator />
-                    </>
-                )}
+                <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-2 px-2 py-1.5">
+                        <p className="text-sm leading-none font-medium">{displayUserName}</p>
+                        <div className="flex items-center space-x-2">
+                            <p className="text-muted-foreground text-xs leading-none">Lv. {99}</p>
+                            <Badge className="border-0 bg-gradient-to-r from-yellow-400 to-orange-500 text-[0.625rem] text-white">
+                                プレミアム
+                            </Badge>
+                        </div>
+                    </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
 
                 {/* ドロップダウンメニュー/ユーザメニューアイテム */}
                 <DropdownMenuItem
