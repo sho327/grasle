@@ -2,22 +2,22 @@
 import { supabaseServer } from './server'
 import type { User } from '@supabase/supabase-js'
 // Types
-import { GroupRow } from '@/types/group'
+import { TeamRow } from '@/types/team'
 import { MembershipRow } from '@/types/membership'
 import { ProfileRow } from '@/types/profile'
 
-// Memberships の Row に、関連する Groups の情報（groups）をネストして追加
-export type MembershipWithGroup = MembershipRow & {
-    groups: GroupRow
+// Memberships の Row に、関連する Teams の情報（teams）をネストして追加
+export type MembershipWithTeam = MembershipRow & {
+    teams: TeamRow
 }
-// プロフィールの Row に、関連する MembershipWithGroup のリスト（memberships）をネストして追加
-export type ProfileWithGroups = ProfileRow & {
-    // profileWithGroups が null でない場合、TypeScriptは memberships が null ではなく配列（[] または [...リスト]）であると判定
-    memberships: MembershipWithGroup[]
+// プロフィールの Row に、関連する MembershipWithTeam のリスト（memberships）をネストして追加
+export type ProfileWithTeams = ProfileRow & {
+    // profileWithTeams が null でない場合、TypeScriptは memberships が null ではなく配列（[] または [...リスト]）であると判定
+    memberships: MembershipWithTeam[]
 }
 
 // ----------------------------------------------------
-// 認証済みユーザーのプロフィールとグループを取得する関数
+// 認証済みユーザーのプロフィールとチームを取得する関数
 // ----------------------------------------------------
 /**
  * 現在ログインしているユーザーセッション情報を取得
@@ -34,7 +34,7 @@ export const getSessionUser = async (): Promise<User | null> => {
 }
 
 /**
- * 認証済みユーザーのプロフィールと所属グループ一覧をフェッチする
+ * 認証済みユーザーのプロフィールと所属チーム一覧をフェッチする
  * ----------------------------------------------------
  * 項目	ロジック	結果
  * profileWithGroupsが"null"の場合	profileWithGroups?.memberships	undefined
@@ -44,7 +44,7 @@ export const getSessionUser = async (): Promise<User | null> => {
  * @createdBy KatoShogo
  * @createdAt 2025/11/03
  */
-export async function fetchAuthenticatedUserData(): Promise<ProfileWithGroups | null> {
+export async function fetchAuthenticatedUserData(): Promise<ProfileWithTeams | null> {
     const user = await getSessionUser()
     if (!user) {
         return null
@@ -64,10 +64,10 @@ export async function fetchAuthenticatedUserData(): Promise<ProfileWithGroups | 
 				memberships!memberships_user_id_fkey( 
 					id,
 					user_id,
-					group_id,
+					team_id,
 					role,
 					status,
-					groups(*)
+					teams(*)
 				)
 			`
         )
@@ -79,9 +79,9 @@ export async function fetchAuthenticatedUserData(): Promise<ProfileWithGroups | 
         return null
     }
 
-    // `as unknown as ProfileWithGroups` で型キャストを強制
+    // `as unknown as ProfileWithTeams` で型キャストを強制
     // (ランタイムのデータ構造は正しいため、パーサーエラーを回避するために使用)
-    return profileData as unknown as ProfileWithGroups
+    return profileData as unknown as ProfileWithTeams
 }
 
 // ============================================================================
@@ -89,12 +89,12 @@ export async function fetchAuthenticatedUserData(): Promise<ProfileWithGroups | 
 // ============================================================================
 // const profileData = await fetchAuthenticatedUserData();
 // if (profileData) {
-//     // 例: 自分が 'admin' の役割を持っているグループだけを抽出したい場合
+//     // 例: 自分が 'admin' の役割を持っているチームだけを抽出したい場合
 //     const adminMemberships = profileData.memberships.filter(m => m.role === 'admin');
 
-//     // 例: 自分が所属するグループ全体のリスト（ロールは問わない）
-//     const allGroups = profileData.memberships.map(m => m.groups);
+//     // 例: 自分が所属するチーム全体のリスト（ロールは問わない）
+//     const allTeams = profileData.memberships.map(m => m.teams);
 
-//     // 例: 個人グループを特定する
-//     const personalGroup = profileData.memberships.find(m => m.groups.is_personal)?.groups;
+//     // 例: 個人チームを特定する
+//     const personalTeam = profileData.memberships.find(m => m.teams.is_personal)?.teams;
 // }

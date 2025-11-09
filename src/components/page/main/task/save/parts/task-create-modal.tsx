@@ -45,7 +45,7 @@ export default function TaskCreateModal({ isOpen, onOpenChange, onSubmit }: Task
         description: '',
         status: 'todo' as TaskStatus,
         assigneeId: '',
-        groupId: '',
+        teamId: '',
     })
 
     // ============================================================================
@@ -54,7 +54,7 @@ export default function TaskCreateModal({ isOpen, onOpenChange, onSubmit }: Task
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         onSubmit({
-            groupId: formData.groupId || '1', // TODO: 実際のgroupIdを取得
+            teamId: formData.teamId || '1', // TODO: 実際のteamIdを取得
             title: formData.title,
             description: formData.description || undefined,
             status: formData.status,
@@ -65,7 +65,7 @@ export default function TaskCreateModal({ isOpen, onOpenChange, onSubmit }: Task
             description: '',
             status: 'todo',
             assigneeId: '',
-            groupId: '',
+            teamId: '',
         })
         onOpenChange(false)
     }

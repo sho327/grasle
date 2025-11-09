@@ -84,7 +84,7 @@ export const HeaderUserMenuDropdown = ({
                 </Button>
             </DropdownMenuTrigger>
             {/* ドロップダウンメニュー */}
-            <DropdownMenuContent align="end" className="w-56 sm:w-40">
+            <DropdownMenuContent align="end" className="w-56 sm:w-48">
                 {/* ドロップダウンメニュー/ヘッダー */}
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-2 px-2 py-1.5">

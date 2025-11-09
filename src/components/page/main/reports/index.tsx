@@ -234,7 +234,7 @@ const ReportApp = () => {
         <div className="mx-auto min-h-screen max-w-7xl space-y-6 bg-gray-50 p-4 sm:p-8">
             <h1 className="flex items-center text-3xl font-bold text-gray-800">
                 <FileText className="mr-2 h-7 w-7 text-blue-600" />
-                {currentGroup?.name || '日報管理'} グループ
+                {currentGroup?.name || '日報管理'} チーム
             </h1>
             <hr />
 
@@ -260,7 +260,7 @@ const ReportApp = () => {
                     ))
                 ) : (
                     <Card className="p-8 text-center text-gray-500">
-                        このグループの日報はまだありません。
+                        このチームの日報はまだありません。
                     </Card>
                 )}
             </div>

@@ -924,7 +924,7 @@ const TaskApp = () => {
         return sorted
     }, [groupTasks, sort.key, sort.direction, getUserName])
 
-    // 看板表示用にタスクをグループ化 🚨 16. useMemo (早期リターンの上に移動)
+    // 看板表示用にタスクをチーム化 🚨 16. useMemo (早期リターンの上に移動)
     const groupedKanbanTasks = useMemo(() => {
         const statuses = ['Todo', 'In Progress', 'Completed']
         return statuses.map((status) => ({
@@ -973,7 +973,7 @@ const TaskApp = () => {
         <div className="mx-auto min-h-screen max-w-7xl space-y-6 bg-gray-50 p-4 sm:p-8">
             <h1 className="flex items-center text-3xl font-bold text-gray-800">
                 <CheckSquare className="mr-2 h-7 w-7 text-[#18BC9C]" />
-                {currentGroup?.name || 'タスク管理'} グループ
+                {currentGroup?.name || 'タスク管理'} チーム
             </h1>
             <hr />
 

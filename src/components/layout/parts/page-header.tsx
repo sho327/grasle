@@ -22,7 +22,13 @@ export default function PageHeader({
     children,
 }: {
     Icon?: LucideIcon
-    iconVariant?: 'default' | 'home' | 'task' | 'report' | 'setting'
+    iconVariant?:
+        | 'default'
+        | 'home'
+        | 'project-list'
+        | 'project-task'
+        | 'project-report'
+        | 'project-setting'
     pageTitle: string
     pageDescription: string
     isBackButton: boolean
@@ -63,14 +69,16 @@ export default function PageHeader({
                                     (iconVariant === 'default'
                                         ? ' text-gray-600'
                                         : iconVariant === 'home'
-                                          ? ' text-primary'
-                                          : iconVariant === 'task'
+                                          ? ' text-gray-600'
+                                          : iconVariant === 'project-list'
                                             ? ' text-chart-2'
-                                            : iconVariant === 'report'
+                                            : iconVariant === 'project-task'
                                               ? ' text-chart-3'
-                                              : iconVariant === 'setting'
+                                              : iconVariant === 'project-report'
                                                 ? ' text-chart-4'
-                                                : ' text-gray-600')
+                                                : iconVariant === 'project-setting'
+                                                  ? ' text-chart-5'
+                                                  : ' text-gray-600')
                                 }
                             />
                         </div>

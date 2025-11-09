@@ -17,7 +17,7 @@ import { useCommonStore } from '@/store/common'
 // Supabase
 import { supabase } from '@/lib/supabase/client'
 // Actions
-import { getAndSetDefaultGroupId } from '@/actions/authActions'
+import { getAndSetDefaultTeamId } from '@/actions/authActions'
 
 /**
  * ログインページ
@@ -87,10 +87,10 @@ export default function LoginPage() {
                 await new Promise((r) => setTimeout(r, 200))
             }
 
-            // ユーザの全メンバーシップから個人グループIDを取得し、Cookieへセット
+            // ユーザの全メンバーシップから個人チームIDを取得し、Cookieへセット
             try {
-                // サーバーアクションを実行して、Cookie設定とグループID取得をサーバー側で完結させる
-                await getAndSetDefaultGroupId(data.user!.id)
+                // サーバーアクションを実行して、Cookie設定とチームID取得をサーバー側で完結させる
+                await getAndSetDefaultTeamId(data.user!.id)
 
                 // トランジション発火（ページ遷移）
                 startTransition(() => {

@@ -18,7 +18,7 @@ export default async function TaskListPage() {
     // ============================================================================
     // 変数（Constant）
     // ============================================================================
-    // 1. Cookieから選択グループIDを取得
+    // 1. Cookieから選択チームIDを取得
     const cookieStore = (await cookies()) as any
     const selectedGroupId = cookieStore.get(SELECTED_GROUP_ID_COOKIE)?.value || null
     if (!selectedGroupId) {
@@ -27,7 +27,7 @@ export default async function TaskListPage() {
         // ※ ログアウト直後の場合は、リダイレクトされるためここには到達しないはずです。
         return (
             <div className="p-8 text-center">
-                <p>グループIDが見つかりませんでした。ログイン状態をご確認ください。</p>
+                <p>チームIDが見つかりませんでした。ログイン状態をご確認ください。</p>
             </div>
         )
     }

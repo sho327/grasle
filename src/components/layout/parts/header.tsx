@@ -1,156 +1,130 @@
 'use client'
 // Modules
-import { useState } from 'react'
-// UI/Components
-import { SidebarTrigger } from '@/components/ui/sidebar'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-    User,
-    Settings,
-    ShoppingBag,
-    Trophy,
-    Crown,
-    LogOut,
-    FolderOpen,
-    Leaf,
-    Coins,
-    Bell,
-} from 'lucide-react'
+import type React from 'react'
 import Link from 'next/link'
-import {
-    HeaderNotificationDropdown,
-    Notification,
-} from '@/components/layout/parts/header-notification-dropdown'
-// import { UserAvatar } from '@/components/common/user-avatar'
-// import { PointsDisplay } from '@/components/common/points-display'
+import { Leaf, Search, ArrowLeft, ChevronLeft } from 'lucide-react'
+// UI/Components
+import { Button } from '@/components/ui/button'
+import { SidebarInset, SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
+// Layout/Components
+import { HeaderNotificationDropdown } from '@/components/layout/parts/header-notification-dropdown'
+import { HeaderUserMenuDropdown } from '@/components/layout/parts/header-user-menu-dropdown'
+// Store
+import { useCommonStore } from '@/store/common'
+// Types
+import type { TeamRow } from '@/types/team'
+// Constants
+import { appInfo } from '@/constants/appInfo'
+// Hooks
+import { useIsMobile } from '@/hooks/use-mobile'
+// Supabase
+import type { ProfileWithTeams } from '@/lib/supabase/userData'
 
 interface HeaderProps {
-    user: {
-        name: string
-        avatar: string
-        level: number
-        points: number
-        isPremium: boolean
-    }
-    notifications: Notification[]
-    notificationsUnreadCount: number
+    profileWithTeams: ProfileWithTeams | null
+    selectTeam: TeamRow | null
 }
 
-export function Header({ user, notifications, notificationsUnreadCount }: HeaderProps) {
+/**
+ * ヘッダーコンポーネント
+ * @args
+ * @createdBy KatoShogo
+ * @createdAt 2025/11/02
+ */
+export default function HeaderLayout({ profileWithTeams, selectTeam }: HeaderProps) {
+    // ============================================================================
+    // 変数（Constant）
+    // ============================================================================
+    const isMobile = useIsMobile()
+
+    // ============================================================================
+    // テンプレート（コンポーネント描画処理）
+    // ============================================================================
     return (
-        <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 border-b bg-white px-4 shadow-md sm:px-5">
-            <SidebarTrigger className="-ml-1" />
-            <div className="ml-2 flex items-center gap-3">
-                {/* <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl shadow-sm">
-          <Leaf className="w-6 h-6 text-white" />
-        </div> */}
-                <div>{/* <h1 className="text-xl font-bold">Grasle</h1> */}</div>
+        <header className="border-border bg-card sticky top-0 flex h-14 items-center gap-4 border-b px-4 shadow-xs md:px-6">
+            {/* 左側: ロゴ、チーム選択 */}
+            <div className="flex h-13 min-w-0 flex-1 items-center gap-2.5 md:flex-initial">
+                <SidebarTrigger className="hover:bg-primary/10 h-8.5 w-8.5 cursor-pointer hover:text-gray-700" />
+                {/* {isMobile && (
+                    <Link href="/teams" className="flex items-center gap-2.5">
+                        <div className="bg-primary flex h-9 w-9 items-center justify-center rounded-xl shadow-sm">
+                            <Leaf className="text-primary-foreground h-5 w-5" />
+                        </div>
+                        <span className="text-foreground text-xl font-bold">
+                            {appInfo.APP_NAME}
+                        </span>
+                    </Link>
+                )} */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {}}
+                    className="hover:bg-primary/10 h-8.5 w-8.5 cursor-pointer hover:text-gray-700"
+                >
+                    <ChevronLeft className="h-5 w-5" />
+                </Button>
+
+                {isMobile && (
+                    <Link href="/teams" className="flex items-center gap-2.5">
+                        {/* <div className="bg-primary flex h-9 w-9 items-center justify-center rounded-xl shadow-sm">
+                            <Leaf className="text-primary-foreground h-5 w-5" />
+                        </div> */}
+                        <span className="text-foreground text-xl font-bold">
+                            {appInfo.APP_NAME}
+                        </span>
+                    </Link>
+                )}
+                {/* <div className="mx-2 hidden h-4 w-px bg-gray-300 md:block" /> */}
+                {/* チーム選択/ドロップダウン */}
+                {/* <HeaderGroupSelectDropdown
+                        selectGroup={selectGroup}
+                        membershipWithGroup={
+                            profileWithTeams ? profileWithTeams.memberships : null
+                        }
+                    /> */}
             </div>
 
-            {/* User Info & Actions */}
-            <div className="ml-auto flex items-center space-x-4">
-                {/* Points Display */}
-                {/* <PointsDisplay points={user.points} /> */}
+            {/* 中央: 検索バー */}
+            {/* <div className="hidden max-w-md flex-1 lg:block">
+                <div className="relative">
+                    <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                    <input
+                        type="search"
+                        placeholder="検索..."
+                        className="border-input bg-background focus:border-ring focus:ring-ring w-full rounded-md border py-2 pr-4 pl-10 text-sm focus:ring-1 focus:outline-none"
+                    />
+                </div>
+            </div> */}
 
-                {/* Notifications */}
-                {/* <NotificationDropdown
-                    notifications={notifications}
-                    unreadCount={unreadCount}
-                    onMarkAsRead={onMarkAsRead}
-                    onMarkAllAsRead={onMarkAllAsRead}
-                /> */}
-
-                {/* User Menu */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            className="relative h-10 w-10 rounded-full hover:bg-blue-50"
-                        >
-                            <UserAvatar
-                                name={user.name}
-                                avatar={user.avatar}
-                                level={user.level}
-                                isPremium={user.isPremium}
-                                size="md"
-                            />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="z-50 w-64" align="end">
-                        <DropdownMenuLabel className="font-normal">
-                            <div className="flex flex-col space-y-2 p-2">
-                                <p className="text-sm leading-none font-medium">{user.name}</p>
-                                <div className="flex items-center space-x-2">
-                                    <p className="text-muted-foreground text-xs leading-none">
-                                        ⭐ レベル {user.level}
-                                    </p>
-                                    {user.isPremium && (
-                                        <Badge className="border-0 bg-gradient-to-r from-yellow-400 to-orange-500 text-xs text-white">
-                                            👑 Premium
-                                        </Badge>
-                                    )}
-                                </div>
-                            </div>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href="/profile/me" className="cursor-pointer">
-                                <User className="mr-2 h-4 w-4" />
-                                <span>プロフィール</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/projects" className="cursor-pointer">
-                                <FolderOpen className="mr-2 h-4 w-4" />
-                                <span>プロジェクト</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/gamification" className="cursor-pointer">
-                                <Trophy className="mr-2 h-4 w-4" />
-                                <span>実績・ミッション</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/points" className="cursor-pointer">
-                                <Coins className="mr-2 h-4 w-4" />
-                                <span>ポイント履歴</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/notifications" className="cursor-pointer">
-                                <Bell className="mr-2 h-4 w-4" />
-                                <span>お知らせ履歴</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/shop" className="cursor-pointer">
-                                <ShoppingBag className="mr-2 h-4 w-4" />
-                                <span>ショップ</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/settings" className="cursor-pointer">
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>設定</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="cursor-pointer text-red-600">
-                            <LogOut className="mr-2 h-4 w-4" />
-                            <span>ログアウト</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+            {/* 右側: お知らせ、ユーザーメニュー */}
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+                {/* お知らせ/ドロップダウン */}
+                <HeaderNotificationDropdown
+                    notifications={[
+                        {
+                            id: 'xxxx',
+                            type: 'task',
+                            title: 'タスクタイトル',
+                            description: '詳細メッセージ',
+                            timestamp: '2秒前',
+                            isRead: false,
+                        },
+                        {
+                            id: 'yyyy',
+                            type: 'note',
+                            title: 'ノートタイトル',
+                            description: 'ノート詳細メッセージ',
+                            timestamp: '2025-10-11',
+                            isRead: true,
+                        },
+                    ]}
+                    unreadCount={3}
+                />
+                {/* ユーザメニュー/ドロップダウン */}
+                <HeaderUserMenuDropdown
+                    displayUserName={profileWithTeams ? profileWithTeams.name : null}
+                    userIconSrc={profileWithTeams ? profileWithTeams.avatar_url : null}
+                />
             </div>
         </header>
     )

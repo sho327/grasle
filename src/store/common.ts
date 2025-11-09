@@ -1,36 +1,48 @@
 // Modules
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GroupRow } from '@/types/group'
+import { TeamRow } from '@/types/team'
 
 interface CommonState {
-    /* 選択中グループ */
-    selectGroup: GroupRow | null
-    setSelectGroup: (selectGroup: GroupRow | null) => void
-    clearSelectGroup: () => void
+    /* 選択中チーム */
+    selectTeam: TeamRow | null
+    setSelectTeam: (selectTeam: TeamRow | null) => void
+    clearSelectTeam: () => void
+
     /* 選択中テーマ */
     theme: 'light' | 'dark'
     setTheme: (theme: 'light' | 'dark') => void
     toggleTheme: () => void
+
     /* ページローディング */
     isLoading: boolean
-    setIsLoading: (value: boolean) => void
+    setIsLoading: (isLoading: boolean) => void
+
+    /* PC/サイドバー表示制御 */
+    pcSidebarOpen: boolean
+    setPcSidebarOpen: (pcSidebarOpen: boolean) => void
 }
 
 export const useCommonStore = create<CommonState>()(
     persist(
         (set, get) => ({
-            /* 選択中グループ */
-            selectGroup: null,
-            setSelectGroup: (selectGroup) => set({ selectGroup: selectGroup }),
-            clearSelectGroup: () => set({ selectGroup: null }),
+            /* 選択中チーム */
+            selectTeam: null,
+            setSelectTeam: (selectTeam) => set({ selectTeam: selectTeam }),
+            clearSelectTeam: () => set({ selectTeam: null }),
+
             /* 選択中テーマ */
             theme: 'light',
             setTheme: (theme) => set({ theme }),
             toggleTheme: () => set({ theme: get().theme === 'light' ? 'dark' : 'light' }),
+
             /* ページローディング */
             isLoading: false,
             setIsLoading: (isLoading) => set({ isLoading: isLoading }),
+
+            /* PC/サイドバー表示制御 */
+            pcSidebarOpen: false,
+            setPcSidebarOpen: (pcSidebarOpen) => set({ pcSidebarOpen: pcSidebarOpen }),
         }),
         { name: 'common' }
     )

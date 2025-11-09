@@ -111,7 +111,7 @@ export default function TaskListPage() {
                 Icon={CheckCircle}
                 iconVariant="task"
                 pageTitle="タスク一覧"
-                pageDescription="グループに紐づくタスク一覧"
+                pageDescription="チームに紐づくタスク一覧"
                 isBackButton={false}
             >
                 {/* タスク新規作成(ボタン+モーダル) */}

@@ -1,6 +1,6 @@
 'use client'
 // Modules
-import { CheckCircle } from 'lucide-react'
+import { Leaf } from 'lucide-react'
 // Store
 import { useCommonStore } from '@/store/common'
 
@@ -26,7 +26,7 @@ export default function LoadingOverlay() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
                     <div className="text-center">
                         <div className="animate-sway mb-3">
-                            <CheckCircle className="text-primary mx-auto h-7 w-7" />
+                            <Leaf className="text-primary mx-auto h-7 w-7" />
                         </div>
                         <p className="text-lg font-medium text-gray-600">読み込み中です...</p>
                     </div>

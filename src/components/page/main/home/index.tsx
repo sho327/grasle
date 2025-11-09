@@ -69,111 +69,122 @@ export default function HomePage() {
             />
 
             {/* InfoBoxs */}
-            {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {quickStats.map((stat) => {
-          const Icon = stat.icon
-          return (
-            <Card key={stat.label} className="border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="pt-4 pb-3 px-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
-                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                  </div>
-                  <Icon className={`w-7 h-7 ${stat.color} opacity-80`} />
-                </div>
-              </CardContent>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                {quickStats.map((stat) => {
+                    const Icon = stat.icon
+                    return (
+                        <Card
+                            key={stat.label}
+                            className="border-border rounded-xl shadow-sm transition-shadow hover:shadow-md"
+                        >
+                            <CardContent className="px-4 pt-4 pb-3">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-muted-foreground mb-1 text-xs">
+                                            {stat.label}
+                                        </p>
+                                        <p className="text-foreground text-2xl font-bold">
+                                            {stat.value}
+                                        </p>
+                                    </div>
+                                    <Icon className={`h-7 w-7 ${stat.color} opacity-80`} />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )
+                })}
+            </div>
+
+            <Card className="mb-5">
+                <CardHeader>
+                    <CardTitle className="text-lg">今日の予定</CardTitle>
+                    <CardDescription className="text-sm">今日の予定を確認</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground text-sm">今日の予定はありません</p>
+                </CardContent>
             </Card>
-          )
-        })}
-      </div> */}
 
-            {/* <Card className="mb-5">
-        <CardHeader>
-          <CardTitle className="text-lg">今日の予定</CardTitle>
-          <CardDescription className="text-sm">今日の予定を確認</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">今日の予定はありません</p>
-        </CardContent>
-      </Card> */}
+            <Card className="border-border rounded-xl shadow-sm">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">クイックアクション</CardTitle>
+                    <CardDescription className="text-sm">
+                        よく使う操作にすばやくアクセス
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-2.5 md:grid-cols-3">
+                        <Link href={`/task/save`}>
+                            <Button
+                                variant="outline"
+                                className="hover:bg-primary/10 h-auto w-full rounded-lg bg-transparent py-3.5 transition-colors hover:text-gray-700"
+                            >
+                                <div className="flex flex-col items-center gap-1.5">
+                                    <Plus className="h-5 w-5" />
+                                    <span className="text-sm font-medium">新しいタスク</span>
+                                </div>
+                            </Button>
+                        </Link>
+                        <Link href={`/team/notes`}>
+                            <Button
+                                variant="outline"
+                                className="hover:bg-primary/10 h-auto w-full rounded-lg bg-transparent py-3.5 transition-colors hover:text-gray-700"
+                            >
+                                <div className="flex flex-col items-center gap-1.5">
+                                    <FileText className="h-5 w-5" />
+                                    <span className="text-sm font-medium">新しいノート</span>
+                                </div>
+                            </Button>
+                        </Link>
+                        <Link href={`/team/calendar`}>
+                            <Button
+                                variant="outline"
+                                className="hover:bg-primary/10 h-auto w-full rounded-lg bg-transparent py-3.5 transition-colors hover:text-gray-700"
+                            >
+                                <div className="flex flex-col items-center gap-1.5">
+                                    <Calendar className="h-5 w-5" />
+                                    <span className="text-sm font-medium">新しいイベント</span>
+                                </div>
+                            </Button>
+                        </Link>
+                    </div>
+                </CardContent>
+            </Card>
 
-            {/* <Card className="border-border rounded-xl shadow-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">クイックアクション</CardTitle>
-          <CardDescription className="text-sm">よく使う操作にすばやくアクセス</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-3 gap-2.5">
-            <Link href={`/team/${params.teamId}/tasks`}>
-              <Button
-                variant="outline"
-                className="w-full rounded-lg h-auto py-3.5 hover:bg-primary/10 hover:text-gray-700 transition-colors bg-transparent"
-              >
-                <div className="flex flex-col items-center gap-1.5">
-                  <Plus className="w-5 h-5" />
-                  <span className="text-sm font-medium">新しいタスク</span>
-                </div>
-              </Button>
-            </Link>
-            <Link href={`/team/${params.teamId}/notes`}>
-              <Button
-                variant="outline"
-                className="w-full rounded-lg h-auto py-3.5 hover:bg-primary/10 hover:text-gray-700 transition-colors bg-transparent"
-              >
-                <div className="flex flex-col items-center gap-1.5">
-                  <FileText className="w-5 h-5" />
-                  <span className="text-sm font-medium">新しいノート</span>
-                </div>
-              </Button>
-            </Link>
-            <Link href={`/team/${params.teamId}/calendar`}>
-              <Button
-                variant="outline"
-                className="w-full rounded-lg h-auto py-3.5 hover:bg-primary/10 hover:text-gray-700 transition-colors bg-transparent"
-              >
-                <div className="flex flex-col items-center gap-1.5">
-                  <Calendar className="w-5 h-5" />
-                  <span className="text-sm font-medium">新しいイベント</span>
-                </div>
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card> */}
-
-            {/* <Card className="border-border rounded-xl shadow-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">最近のアクティビティ</CardTitle>
-          <CardDescription className="text-sm">チームの活動状況を確認</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2.5">
-            {recentActivity.map((activity) => (
-              <div
-                key={activity.id}
-                className="flex items-start gap-3 p-3.5 rounded-lg bg-secondary/30 hover:bg-primary/10 transition-colors border border-transparent hover:border-border"
-              >
-                <Avatar className="w-9 h-9">
-                  <AvatarFallback className="bg-secondary text-sm font-medium">
-                    {activity.user.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground">
-                    <span className="font-semibold">{activity.user}</span>
-                    <span>{activity.action}</span>
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-2">
-                    <span className="truncate">{activity.item}</span>
-                  </p>
-                </div>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{activity.time}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card> */}
+            <Card className="border-border rounded-xl shadow-sm">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">最近のアクティビティ</CardTitle>
+                    <CardDescription className="text-sm">チームの活動状況を確認</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-2.5">
+                        {recentActivity.map((activity) => (
+                            <div
+                                key={activity.id}
+                                className="bg-secondary/30 hover:bg-primary/10 hover:border-border flex items-start gap-3 rounded-lg border border-transparent p-3.5 transition-colors"
+                            >
+                                <Avatar className="h-9 w-9">
+                                    <AvatarFallback className="bg-secondary text-sm font-medium">
+                                        {activity.user.charAt(0)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-foreground text-sm">
+                                        <span className="font-semibold">{activity.user}</span>
+                                        <span>{activity.action}</span>
+                                    </p>
+                                    <p className="text-muted-foreground mt-0.5 flex items-center gap-2 text-sm">
+                                        <span className="truncate">{activity.item}</span>
+                                    </p>
+                                </div>
+                                <span className="text-muted-foreground text-xs whitespace-nowrap">
+                                    {activity.time}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }

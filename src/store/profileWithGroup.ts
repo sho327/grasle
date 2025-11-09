@@ -1,21 +1,21 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 // Supabase
-import type { ProfileWithGroups } from '@/lib/supabase/userData'
+import type { ProfileWithTeams } from '@/lib/supabase/userData'
 
-interface ProfileWithGroupsState {
-    profileWithGroups: ProfileWithGroups | null
-    setProfileWithGroups: (user: ProfileWithGroups | null) => void
-    clearProfileWithGroups: () => void
+interface ProfileWithTeamsState {
+    profileWithTeams: ProfileWithTeams | null
+    setProfileWithTeams: (user: ProfileWithTeams | null) => void
+    clearProfileWithTeams: () => void
 }
 
-export const useProfileWithGroupsStore = create<ProfileWithGroupsState>()(
+export const useProfileWithTeamsStore = create<ProfileWithTeamsState>()(
     persist(
         (set) => ({
-            profileWithGroups: null,
-            setProfileWithGroups: (profileWithGroups) => set({ profileWithGroups }),
-            clearProfileWithGroups: () => set({ profileWithGroups: null }),
+            profileWithTeams: null,
+            setProfileWithTeams: (profileWithTeams) => set({ profileWithTeams: profileWithTeams }),
+            clearProfileWithTeams: () => set({ profileWithTeams: null }),
         }),
-        { name: 'profile-with-groups' }
+        { name: 'profile-with-teams' }
     )
 )

@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatTimestamp } from '@/utis/formatTimestamp'
+// Libs
+import { cn } from '@/lib/utils'
 
 export type Notification = {
     id: string
@@ -91,8 +93,8 @@ export function HeaderNotificationDropdown({
             </DropdownMenuTrigger>
             {/* ドロップダウンメニュー */}
             <DropdownMenuContent
-                className="me-3.5 max-h-96 w-[calc(100vw-2rem)] sm:w-80"
-                align="start"
+                className="me-3.5 max-h-96 w-[calc(100vw-2rem)] sm:w-74"
+                align="end"
                 forceMount
             >
                 {/* ドロップダウンメニュー/ヘッダー */}
@@ -124,10 +126,13 @@ export function HeaderNotificationDropdown({
                             {notifications.map((notification) => (
                                 <DropdownMenuItem
                                     key={notification.id}
-                                    className={`hover:bg-primary/10 cursor-pointer p-3 hover:text-gray-700 ${!notification.isRead ? 'bg-blue-50/50' : ''}`}
+                                    className={cn(
+                                        'hover:bg-primary/10 cursor-pointer p-3 hover:text-gray-700',
+                                        !notification.isRead ? 'bg-blue-50/50' : ''
+                                    )}
                                     onClick={() => onClickNotificationItem(notification)}
                                 >
-                                    <div className="flex w-full items-start gap-3">
+                                    <div className="flex w-full items-start gap-2.5">
                                         <div className="mt-0.5 flex-shrink-0">
                                             {getNotificationIcon(notification.type)}
                                         </div>
@@ -146,10 +151,10 @@ export function HeaderNotificationDropdown({
                                                     <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
                                                 )}
                                             </div>
-                                            <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                                            <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
                                                 {notification.description}
                                             </p>
-                                            <p className="mt-2 text-xs text-slate-400">
+                                            <p className="text-muted-foreground mt-1 text-xs">
                                                 {formatTimestamp(notification.timestamp)}
                                             </p>
                                         </div>

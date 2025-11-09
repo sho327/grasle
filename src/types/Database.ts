@@ -22,7 +22,7 @@ export interface Database {
                 Relationships: []
             }
 
-            groups: {
+            teams: {
                 Row: {
                     id: string
                     name: string
@@ -39,10 +39,10 @@ export interface Database {
                     is_personal?: boolean
                     created_at?: string | null
                 }
-                Update: Partial<Database['public']['Tables']['groups']['Insert']>
+                Update: Partial<Database['public']['Tables']['teams']['Insert']>
                 Relationships: [
                     {
-                        foreignKeyName: 'groups_owner_id_fkey'
+                        foreignKeyName: 'teams_owner_id_fkey'
                         columns: ['owner_id']
                         referencedRelation: 'profiles'
                         referencedColumns: ['id']
@@ -54,7 +54,7 @@ export interface Database {
                 Row: {
                     id: string
                     user_id: string
-                    group_id: string
+                    team_id: string
                     role: 'admin' | 'member' | 'guest'
                     status: 'active' | 'invited' | 'removed'
                     invited_by: string | null
@@ -63,7 +63,7 @@ export interface Database {
                 Insert: {
                     id?: string
                     user_id: string
-                    group_id: string
+                    team_id: string
                     role: 'admin' | 'member' | 'guest'
                     status: 'active' | 'invited' | 'removed'
                     invited_by?: string | null
@@ -78,9 +78,9 @@ export interface Database {
                         referencedColumns: ['id']
                     },
                     {
-                        foreignKeyName: 'memberships_group_id_fkey'
-                        columns: ['group_id']
-                        referencedRelation: 'groups'
+                        foreignKeyName: 'memberships_team_id_fkey'
+                        columns: ['team_id']
+                        referencedRelation: 'teams'
                         referencedColumns: ['id']
                     },
                     {
@@ -92,15 +92,50 @@ export interface Database {
                 ]
             }
 
-            // 🚀 tasks テーブル (duration_minutes は SQL で定義されたため除外)
+            // 🆕 🚀 projects テーブル
+            projects: {
+                Row: {
+                    id: string
+                    team_id: string
+                    name: string
+                    description: string | null
+                    status: 'active' | 'on_hold' | 'completed' | 'archived'
+                    start_date: string | null // SQLでは DATE
+                    end_date: string | null // SQLでは DATE
+                    created_at: string | null
+                    updated_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    team_id: string
+                    name: string
+                    description?: string | null
+                    status?: 'active' | 'on_hold' | 'completed' | 'archived'
+                    start_date?: string | null
+                    end_date?: string | null
+                    created_at?: string | null
+                    updated_at?: string | null
+                }
+                Update: Partial<Database['public']['Tables']['projects']['Insert']>
+                Relationships: [
+                    {
+                        foreignKeyName: 'projects_team_id_fkey'
+                        columns: ['team_id']
+                        referencedRelation: 'teams'
+                        referencedColumns: ['id']
+                    },
+                ]
+            }
+
+            // 🚀 tasks テーブル (🔄 project_id に変更, status に 'canceled' を追加)
             tasks: {
                 Row: {
                     id: string
-                    group_id: string
+                    project_id: string // 🔄 team_id から変更
                     title: string
                     description: string | null
                     assignee_id: string | null
-                    status: 'todo' | 'in_progress' | 'done'
+                    status: 'todo' | 'in_progress' | 'done' | 'canceled' // 🔄 'canceled' を追加
                     due_date: string | null
                     start_at: string | null
                     end_at: string | null
@@ -109,11 +144,11 @@ export interface Database {
                 }
                 Insert: {
                     id?: string
-                    group_id: string
+                    project_id: string // 🔄 team_id から変更
                     title: string
                     description?: string | null
                     assignee_id?: string | null
-                    status: 'todo' | 'in_progress' | 'done'
+                    status?: 'todo' | 'in_progress' | 'done' | 'canceled' // 🔄 'canceled' を追加
                     due_date?: string | null
                     start_at?: string | null
                     end_at?: string | null
@@ -123,9 +158,9 @@ export interface Database {
                 Update: Partial<Database['public']['Tables']['tasks']['Insert']>
                 Relationships: [
                     {
-                        foreignKeyName: 'tasks_group_id_fkey'
-                        columns: ['group_id']
-                        referencedRelation: 'groups'
+                        foreignKeyName: 'tasks_project_id_fkey' // 🔄 FK名も project_id に合わせることを推奨
+                        columns: ['project_id']
+                        referencedRelation: 'projects'
                         referencedColumns: ['id']
                     },
                     {
@@ -137,7 +172,7 @@ export interface Database {
                 ]
             }
 
-            // 🚀 work_logs テーブル
+            // 🚀 work_logs テーブル (変更なし)
             work_logs: {
                 Row: {
                     id: string
@@ -175,11 +210,12 @@ export interface Database {
                 ]
             }
 
-            // 🚀 reports テーブル
+            // 🚀 reports テーブル (🔄 project_id を追加)
             reports: {
                 Row: {
                     id: string
-                    group_id: string
+                    team_id: string
+                    project_id: string | null // 🔄 project_id を追加 (NULL許容)
                     user_id: string
                     date: string
                     content: string
@@ -189,7 +225,8 @@ export interface Database {
                 }
                 Insert: {
                     id?: string
-                    group_id: string
+                    team_id: string
+                    project_id?: string | null // 🔄 project_id を追加
                     user_id: string
                     date: string
                     content: string
@@ -206,19 +243,26 @@ export interface Database {
                         referencedColumns: ['id']
                     },
                     {
-                        foreignKeyName: 'reports_group_id_fkey'
-                        columns: ['group_id']
-                        referencedRelation: 'groups'
+                        foreignKeyName: 'reports_team_id_fkey'
+                        columns: ['team_id']
+                        referencedRelation: 'teams'
+                        referencedColumns: ['id']
+                    },
+                    {
+                        foreignKeyName: 'reports_project_id_fkey' // 🆕 project_id のリレーションシップを追加
+                        columns: ['project_id']
+                        referencedRelation: 'projects'
                         referencedColumns: ['id']
                     },
                 ]
             }
 
-            // 🚀 notifications テーブル
+            // 🚀 notifications テーブル (🔄 project_id を追加)
             notifications: {
                 Row: {
                     id: string
-                    group_id: string | null
+                    team_id: string | null
+                    project_id: string | null // 🔄 project_id を追加
                     user_id: string
                     sender_id: string | null
                     type: 'task' | 'report' | 'system' | 'comment'
@@ -230,7 +274,8 @@ export interface Database {
                 }
                 Insert: {
                     id?: string
-                    group_id?: string | null
+                    team_id?: string | null
+                    project_id?: string | null // 🔄 project_id を追加
                     user_id: string
                     sender_id?: string | null
                     type: 'task' | 'report' | 'system' | 'comment'
@@ -255,9 +300,15 @@ export interface Database {
                         referencedColumns: ['id']
                     },
                     {
-                        foreignKeyName: 'notifications_group_id_fkey'
-                        columns: ['group_id']
-                        referencedRelation: 'groups'
+                        foreignKeyName: 'notifications_team_id_fkey'
+                        columns: ['team_id']
+                        referencedRelation: 'teams'
+                        referencedColumns: ['id']
+                    },
+                    {
+                        foreignKeyName: 'notifications_project_id_fkey' // 🆕 project_id のリレーションシップを追加
+                        columns: ['project_id']
+                        referencedRelation: 'projects'
                         referencedColumns: ['id']
                     },
                 ]

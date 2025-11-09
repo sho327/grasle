@@ -34,7 +34,7 @@ export default function LandingPage() {
             <section className="container mx-auto px-4 py-20 text-center">
                 <div className="mx-auto max-w-3xl space-y-6">
                     <h1 className="text-foreground text-5xl font-bold text-balance md:text-6xl">
-                        チームのための、かわいいグループウェア
+                        チームのための、かわいいチームウェア
                     </h1>
                     <p className="text-muted-foreground text-xl text-balance">
                         チームがつながり、協力し、一緒に成長するための優しい空間。シンプルで直感的、そして心を込めてデザインされています。

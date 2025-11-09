@@ -25,20 +25,20 @@ const getInitialData = () => {
 
     return {
         currentUserId: 'user-1',
-        currentGroupId: 'group-1',
+        currentTeamId: 'team-1',
         users: [
             { id: 'user-1', name: '田中太郎', email: 'taro@example.com' },
             { id: 'user-2', name: '佐藤花子', email: 'hanako@example.com' },
         ],
-        groups: [
-            { id: 'group-1', name: 'デザインゼミ', owner_id: 'user-1' },
-            { id: 'group-2', name: '個人ワーク', owner_id: 'user-1' },
+        teams: [
+            { id: 'team-1', name: 'デザインゼミ', owner_id: 'user-1' },
+            { id: 'team-2', name: '個人ワーク', owner_id: 'user-1' },
         ],
         tasks: [
             // 日報の自動ログテスト用に完了タスクを含める
             {
                 id: 't1',
-                group_id: 'group-1',
+                team_id: 'team-1',
                 title: 'LPデザインのレスポンシブ対応',
                 assignee: 'user-1',
                 status: 'Completed',
@@ -49,7 +49,7 @@ const getInitialData = () => {
             },
             {
                 id: 't2',
-                group_id: 'group-1',
+                team_id: 'team-1',
                 title: '要件定義書レビュー',
                 assignee: 'user-2',
                 status: 'Todo',
@@ -63,7 +63,7 @@ const getInitialData = () => {
             // ダミーの日報データ
             {
                 id: 'r1',
-                group_id: 'group-1',
+                team_id: 'team-1',
                 date: today,
                 author_id: 'user-1',
                 auto_content: '【完了タスク】LPデザインのレスポンシブ対応 (9:00完了)',
@@ -74,7 +74,7 @@ const getInitialData = () => {
             },
             {
                 id: 'r2',
-                group_id: 'group-1',
+                team_id: 'team-1',
                 date: yesterday,
                 author_id: 'user-2',
                 auto_content: '【完了タスク】仕様書の作成',
@@ -138,13 +138,13 @@ const useStore = () => {
 }
 
 /**
- * グループ固有の派生データとヘルパー関数 Hooks (useGroupData)
+ * チーム固有の派生データとヘルパー関数 Hooks (useGroupData)
  */
 const useGroupData = (store) => {
     const { currentGroupId, users, tasks, reports } = store
 
-    const currentGroup = store.groups.find((g) => g.id === currentGroupId)
-    const groupReports = reports.filter((r) => r.group_id === currentGroupId)
+    const currentGroup = store.teams.find((g) => g.id === currentGroupId)
+    const teamReports = reports.filter((r) => r.team_id === currentGroupId)
 
     const getUserName = useCallback(
         (userId) => {
@@ -162,7 +162,7 @@ const useGroupData = (store) => {
 
     return {
         currentGroup,
-        groupReports,
+        teamReports,
         getUserName,
         getReportById,
     }
@@ -423,7 +423,7 @@ const ReportApp = () => {
     // 状態管理 Hooks
     const store = useStore()
     const { saveReport, isLoaded } = store // saveReport は useStore から取得
-    const { currentGroup, groupReports, getUserName, getReportById } = useGroupData(store) // groupReports, getReportById は useGroupData から取得
+    const { currentGroup, teamReports, getUserName, getReportById } = useGroupData(store) // teamReports, getReportById は useGroupData から取得
 
     // UIの状態 Hooks
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -432,8 +432,8 @@ const ReportApp = () => {
     // ロジック Hooks
     const sortedReports = useMemo(() => {
         // 最新の日報が上に来るようにソート
-        return [...groupReports].sort((a, b) => new Date(b.date) - new Date(a.date))
-    }, [groupReports])
+        return [...teamReports].sort((a, b) => new Date(b.date) - new Date(a.date))
+    }, [teamReports])
 
     // 早期リターンを全ての Hooks の後に配置
     if (!isLoaded) {
@@ -458,13 +458,13 @@ const ReportApp = () => {
         <div className="mx-auto min-h-screen max-w-7xl space-y-6 bg-gray-50 p-4 sm:p-8">
             <h1 className="flex items-center text-3xl font-bold text-gray-800">
                 <FileText className="mr-2 h-7 w-7 text-blue-600" />
-                {currentGroup?.name || '日報管理'} グループ
+                {currentGroup?.name || '日報管理'} チーム
             </h1>
             <hr />
 
             <div className="flex flex-col items-start justify-between pb-3 sm:flex-row sm:items-center">
                 <h2 className="mb-3 text-xl font-semibold text-gray-800 sm:mb-0">
-                    日報履歴 ({groupReports.length}件)
+                    日報履歴 ({teamReports.length}件)
                 </h2>
                 <Button variant="secondary" className="text-blue-600 hover:bg-blue-50">
                     <Plus className="mr-2 h-4 w-4" />
@@ -484,7 +484,7 @@ const ReportApp = () => {
                     ))
                 ) : (
                     <Card className="p-8 text-center text-gray-500">
-                        このグループの日報はまだありません。
+                        このチームの日報はまだありません。
                     </Card>
                 )}
             </div>

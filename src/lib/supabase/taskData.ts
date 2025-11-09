@@ -10,25 +10,25 @@ export type TaskWithAssignee = TaskRow & {
 }
 
 /**
- * 特定のグループに所属するタスク一覧をフェッチする
+ * 特定のチームに所属するタスク一覧をフェッチする
  * @args
  * @createdBy KatoShogo
  * @createdAt 2025/11/03
  */
-export async function fetchTasksByGroup(groupId: string): Promise<TaskWithAssignee[] | null> {
-    if (!groupId) {
+export async function fetchTasksByTeam(teamId: string): Promise<TaskWithAssignee[] | null> {
+    if (!teamId) {
         return null
     }
 
     const supabase = await supabaseServer()
 
-    // RLSが有効な場合、ログインユーザーがこのグループに所属している必要があります
+    // RLSが有効な場合、ログインユーザーがこのチームに所属している必要があります
     const { data: tasksData, error } = await supabase
         .from('tasks')
         .select(
             `
                 id,
-                group_id,
+                team_id,
                 title,
                 description,
                 status,
@@ -42,11 +42,11 @@ export async function fetchTasksByGroup(groupId: string): Promise<TaskWithAssign
                 )
             `
         )
-        .eq('group_id', groupId)
+        .eq('team_id', teamId)
         .order('created_at', { ascending: false }) // 新しいタスクを上に表示
 
     if (error) {
-        console.error('Error fetching tasks by group:', error.message)
+        console.error('Error fetching tasks by team:', error.message)
         return null
     }
 
