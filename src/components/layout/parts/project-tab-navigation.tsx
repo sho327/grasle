@@ -27,7 +27,7 @@ export default function ProjectTabNavigation({ projectId }: ProjectTabNavigation
     const pathname = usePathname()
     const isMobile = useIsMobile()
     const navItems = [
-        { label: '概要', icon: LayoutDashboard, href: `/home` },
+        { label: '概要', icon: LayoutDashboard, href: `/project/${projectId}/overview` },
         // { label: '概要', icon: LayoutDashboard, href: `/project/${projectId}` },
         { label: 'タスク', icon: CheckSquare, href: `/project/${projectId}/tasks` },
         { label: 'メンバー', icon: Users, href: `/project/${projectId}/members` },

@@ -5,7 +5,7 @@ import { fetchProjectDetails, ProjectWithDetails } from '@/lib/supabase/projectD
 
 interface ProjectLayoutProps {
     children: React.ReactNode
-    params: { projectId: string }
+    params: Promise<{ projectId: string }>
 }
 
 /**
@@ -18,7 +18,7 @@ export default async function ProjectLayout({ children, params }: ProjectLayoutP
     // ============================================================================
     // 変数（Constant）
     // ============================================================================
-    const { projectId } = params
+    const { projectId } = await params
     // 1. データ取得
     // ----------------------------------------
     let project: ProjectWithDetails | null = null

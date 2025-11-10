@@ -9,32 +9,36 @@ interface CommonState {
     setSelectTeam: (selectTeam: TeamRow | null) => void
     clearSelectTeam: () => void
 
-    /* 選択中テーマ */
-    theme: 'light' | 'dark'
-    setTheme: (theme: 'light' | 'dark') => void
-    toggleTheme: () => void
-
     /* ページローディング */
     isLoading: boolean
     setIsLoading: (isLoading: boolean) => void
 }
 
-export const useCommonStore = create<CommonState>()(
+export const useCommonStore = create<CommonState>()((set, get) => ({
+    /* 選択中チーム */
+    selectTeam: null,
+    setSelectTeam: (selectTeam) => set({ selectTeam: selectTeam }),
+    clearSelectTeam: () => set({ selectTeam: null }),
+
+    /* ページローディング */
+    isLoading: false,
+    setIsLoading: (isLoading) => set({ isLoading: isLoading }),
+}))
+
+interface LocalStorageCommonState {
+    /* 選択中テーマ */
+    theme: 'light' | 'dark'
+    setTheme: (theme: 'light' | 'dark') => void
+    toggleTheme: () => void
+}
+
+export const useLocalStorageCommonStore = create<LocalStorageCommonState>()(
     persist(
         (set, get) => ({
-            /* 選択中チーム */
-            selectTeam: null,
-            setSelectTeam: (selectTeam) => set({ selectTeam: selectTeam }),
-            clearSelectTeam: () => set({ selectTeam: null }),
-
             /* 選択中テーマ */
             theme: 'light',
             setTheme: (theme) => set({ theme }),
             toggleTheme: () => set({ theme: get().theme === 'light' ? 'dark' : 'light' }),
-
-            /* ページローディング */
-            isLoading: false,
-            setIsLoading: (isLoading) => set({ isLoading: isLoading }),
         }),
         { name: 'common' }
     )

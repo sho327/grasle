@@ -55,7 +55,7 @@ export function ClientProjectLayout({ children, project, error }: ClientProjectL
     return (
         <>
             {/* プロジェクト選択時/上部ナビゲーション */}
-            <ProjectTabNavigation projectId="xxx" />
+            <ProjectTabNavigation projectId={project.id} />
 
             {/* ボディ箇所 */}
             <main className="container mx-auto px-3 py-5.5 sm:px-6 sm:py-6">{children}</main>

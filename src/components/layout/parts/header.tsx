@@ -42,12 +42,17 @@ export default function HeaderLayout({ profileWithTeams, project }: HeaderProps)
         <header className="border-border bg-card sticky top-0 flex h-14 items-center gap-4 border-b px-4 shadow-xs md:px-6">
             {/* 左側: ロゴ、チーム選択 */}
             <div className="flex h-13 min-w-0 flex-1 items-center gap-2.5 md:flex-initial">
-                <SidebarTrigger className="hover:bg-primary/10 h-8.5 w-8.5 cursor-pointer hover:text-gray-700" />
+                {(!isProjectSelected && isMobile) ||
+                    (!isMobile && (
+                        <SidebarTrigger className="hover:bg-primary/10 h-8.5 w-8.5 cursor-pointer hover:text-gray-700" />
+                    ))}
                 {isProjectSelected && (
                     <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => {}}
+                        onClick={() => {
+                            location.href = '/project/list'
+                        }}
                         className="hover:bg-primary/10 h-8.5 w-8.5 cursor-pointer hover:text-gray-700"
                     >
                         <ChevronLeft className="h-5 w-5" />
@@ -56,7 +61,7 @@ export default function HeaderLayout({ profileWithTeams, project }: HeaderProps)
 
                 {/* アプリ名 or 選択中プロジェクト名 */}
                 {!isProjectSelected && isMobile && (
-                    <Link href="/teams" className="flex items-center gap-2.5">
+                    <Link href="/home" className="flex items-center gap-2.5">
                         <div className="bg-primary flex h-9 w-9 items-center justify-center rounded-xl shadow-sm">
                             <Leaf className="text-primary-foreground h-5 w-5" />
                         </div>
@@ -66,7 +71,7 @@ export default function HeaderLayout({ profileWithTeams, project }: HeaderProps)
                     </Link>
                 )}
                 {isProjectSelected && (
-                    <span className="text-foreground text-xl font-semibold">{project?.name}</span>
+                    <span className="text-foreground text-md font-semibold">{project?.name}</span>
                 )}
             </div>
 
