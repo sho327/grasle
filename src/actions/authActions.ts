@@ -1,6 +1,5 @@
 'use server'
 // Modules
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 // Supabase
 import { supabaseServer } from '@/lib/supabase/server'
@@ -15,10 +14,7 @@ export async function getAndSetDefaultTeamId(userId: string) {
     if (!userId) {
         throw new Error('User ID is required.')
     }
-
     const supabase = await supabaseServer()
-    const cookieStore: any = await cookies() // 型エラー回避のため 'any' にキャスト
-
     // 1. サーバー側で安全に個人チームIDを取得
     const { data: userData, error: fetchError } = await supabase
         .from('profiles')

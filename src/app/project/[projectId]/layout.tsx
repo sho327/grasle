@@ -1,5 +1,7 @@
 // Layout/Components
 import { ClientProjectLayout } from '@/components/layout/client-project-layout'
+// Libs/ServerUtils
+import { getSessionData } from '@/lib/server-utils/getSessionData'
 // Supabase
 import { fetchProjectDetails, ProjectWithDetails } from '@/lib/supabase/projectData'
 
@@ -15,6 +17,15 @@ interface ProjectLayoutProps {
  * @createdAt 2025/11/10
  */
 export default async function ProjectLayout({ children, params }: ProjectLayoutProps) {
+    // ============================================================================
+    // 変数（Constant）
+    // ============================================================================
+    const {
+        profileWithTeams,
+        selectedTeamId: finalSelectedTeamId,
+        needsCookieUpdate,
+    } = await getSessionData()
+
     // ============================================================================
     // 変数（Constant）
     // ============================================================================
@@ -39,7 +50,13 @@ export default async function ProjectLayout({ children, params }: ProjectLayoutP
     // テンプレート（Template）
     // ============================================================================
     return (
-        <ClientProjectLayout project={project} error={error}>
+        <ClientProjectLayout
+            profileWithTeams={profileWithTeams}
+            selectedTeamId={finalSelectedTeamId}
+            needsCookieUpdate={needsCookieUpdate}
+            project={project}
+            error={error}
+        >
             {children}
         </ClientProjectLayout>
     )

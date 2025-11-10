@@ -62,7 +62,6 @@ export default function ProjectList({ projects }: ProjectListProps) {
     // ============================================================================
     // プロジェクトの件数を表示
     const projectCount = projects.length
-    console.log(projects)
 
     // ============================================================================
     // テンプレート（コンポーネント描画処理）

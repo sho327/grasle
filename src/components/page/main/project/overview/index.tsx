@@ -17,7 +17,6 @@ export default function ProjectOverviewPage() {
     // グローバル状態（GlobalState）
     // ============================================================================
     const { project } = useProjectStore()
-    console.log(project)
 
     // ============================================================================
     // テンプレート（コンポーネント描画処理）

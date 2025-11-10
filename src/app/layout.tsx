@@ -2,6 +2,8 @@
 import type React from 'react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+// UI/Components
+import { SidebarProvider } from '@/components/ui/sidebar'
 // Privider/Components
 import { ThemeProviderWrapper } from '@/components/providers/theme-provider-wrapper'
 // Layout/Components
@@ -37,7 +39,7 @@ export default function RootLayout({
         <html lang="ja" suppressHydrationWarning>
             <body className={`${inter.className} font-sans antialiased`}>
                 <ThemeProviderWrapper>
-                    {children}
+                    <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
                     {/* ローディングオーバーレイ */}
                     <LoadingOverlay />
                 </ThemeProviderWrapper>
