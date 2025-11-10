@@ -6,8 +6,6 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 import { ClientMainLayout } from '@/components/layout/client-main-layout'
 // Supabase
 import { fetchAuthenticatedUserData } from '@/lib/supabase/userData'
-// Actions
-import { setSelectedTeamCookie } from '@/actions/teamActions'
 // Constants
 import { selectedTeamIdCookie } from '@/constants/selectedTeamIdCookie'
 

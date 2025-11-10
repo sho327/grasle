@@ -2,22 +2,18 @@
 // Modules
 import type React from 'react'
 import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 // UI/Components
 import { SidebarInset } from '@/components/ui/sidebar'
 // Layout/Components
 import Header from '@/components/layout/parts/header'
-import ProjectTabNavigation from '@/components/layout/parts/project-tab-navigation'
 import BottomNavigation from '@/components/layout/parts/bottom-navigation'
 import Sidebar from '@/components/layout/parts/sidebar'
 // Types
-import type { LayoutNavItem } from '@/types/common'
 import type { TeamRow } from '@/types/team'
-// Constants
-import { pageRoutes } from '@/constants/pageRoutes'
 // Store
 import { useCommonStore } from '@/store/common'
-import { useProfileWithTeamsStore } from '@/store/profileWithGroup'
+import { useProjectStore } from '@/store/projectStore'
 // Hooks
 import { useIsMobile } from '@/hooks/use-mobile'
 // Supabase
@@ -29,7 +25,6 @@ interface ClientMainLayoutProps {
     children: React.ReactNode
     profileWithTeams: ProfileWithTeams | null
     selectedTeamId: string | null
-    selectedProjectId?: string | null
     needsCookieUpdate?: boolean // Cookie更新が必要かどうか
 }
 
@@ -43,7 +38,6 @@ export function ClientMainLayout({
     children,
     profileWithTeams,
     selectedTeamId,
-    selectedProjectId = null,
     needsCookieUpdate,
 }: ClientMainLayoutProps) {
     // ============================================================================
@@ -78,24 +72,20 @@ export function ClientMainLayout({
     // グローバル状態（GlobalState）
     // ============================================================================
     const { isLoading, setIsLoading } = useCommonStore()
-    const { setProfileWithTeams } = useProfileWithTeamsStore()
+    const { project } = useProjectStore()
 
     // ============================================================================
     // Effect(Watch)処理（Effect(Watch)）
     // ============================================================================
     useEffect(() => {
-        // 1. プロファイル情報のストア設定 (既存)
-        if (profileWithTeams) setProfileWithTeams(profileWithTeams)
-        else setProfileWithTeams(null)
-
-        // 2. 選択中チームの表示設定
+        // 1. 選択中チームの表示設定
         // 既に setCurrentGroup が実行済みの場合、Props が変わったときだけ更新
         const newTeam = getInitialTeam(selectedTeamId, profileWithTeams)
         if (newTeam?.id !== currentTeam?.id) {
             setCurrentGroup(newTeam)
         }
 
-        // 3. Cookie更新が必要な場合、クライアント側からServer Actionを呼び出してCookieを更新
+        // 2. Cookie更新が必要な場合、クライアント側からServer Actionを呼び出してCookieを更新
         if (needsCookieUpdate) {
             if (selectedTeamId) {
                 setSelectedTeamCookie(selectedTeamId)
@@ -112,14 +102,13 @@ export function ClientMainLayout({
             setIsLoading(false)
             console.log('Loading reset complete via ClientMainLayout.')
         }
-    }, [
-        profileWithTeams,
-        setProfileWithTeams,
-        selectedTeamId,
-        needsCookieUpdate,
-        currentTeam?.id,
-        router,
-    ])
+    }, [profileWithTeams, selectedTeamId, needsCookieUpdate, currentTeam?.id, router])
+
+    // ============================================================================
+    // Define(Computed)処理(状態等による変数定義)
+    // ============================================================================
+    // currentProject が null でない、かつ ID がある場合に true
+    const isProjectSelected = !!project?.id
 
     // ============================================================================
     // テンプレート（コンポーネント描画処理）
@@ -130,17 +119,18 @@ export function ClientMainLayout({
             {/* メインコンテンツ(ヘッダー 〜 下部ナビゲーション) */}
             <SidebarInset className="flex h-screen flex-col overflow-scroll">
                 {/* ヘッダー */}
-                <Header profileWithTeams={profileWithTeams} selectTeam={currentTeam} />
-
-                {/* プロジェクト選択時/上部ナビゲーション */}
-                {/* <ProjectTabNavigation projectId="xxx" /> */}
+                <Header profileWithTeams={profileWithTeams} project={project} />
 
                 {/* ボディ箇所 */}
-                <main className="container mx-auto px-3 py-5.5 sm:px-6 sm:py-6">{children}</main>
+                {!isProjectSelected && (
+                    <main className="container mx-auto px-3 py-5.5 sm:px-6 sm:py-6">
+                        {children}
+                    </main>
+                )}
+                {isProjectSelected && <>{children}</>}
 
                 {/* プロジェクト未選択時 + モバイルの場合/下部ナビゲーション */}
-                {!selectedProjectId && isMobile && <BottomNavigation />}
-                {/* </div> */}
+                {!isProjectSelected && isMobile && <BottomNavigation />}
             </SidebarInset>
         </>
     )

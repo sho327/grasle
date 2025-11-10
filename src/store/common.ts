@@ -17,10 +17,6 @@ interface CommonState {
     /* ページローディング */
     isLoading: boolean
     setIsLoading: (isLoading: boolean) => void
-
-    /* PC/サイドバー表示制御 */
-    pcSidebarOpen: boolean
-    setPcSidebarOpen: (pcSidebarOpen: boolean) => void
 }
 
 export const useCommonStore = create<CommonState>()(
@@ -39,10 +35,6 @@ export const useCommonStore = create<CommonState>()(
             /* ページローディング */
             isLoading: false,
             setIsLoading: (isLoading) => set({ isLoading: isLoading }),
-
-            /* PC/サイドバー表示制御 */
-            pcSidebarOpen: false,
-            setPcSidebarOpen: (pcSidebarOpen) => set({ pcSidebarOpen: pcSidebarOpen }),
         }),
         { name: 'common' }
     )

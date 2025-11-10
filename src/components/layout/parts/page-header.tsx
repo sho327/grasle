@@ -70,7 +70,7 @@ export default function PageHeader({
                                     (iconVariant === 'default'
                                         ? ' text-gray-600'
                                         : iconVariant === 'home'
-                                          ? ' text-gray-600'
+                                          ? ' text-chart-1'
                                           : iconVariant === 'project-list'
                                             ? ' text-chart-2'
                                             : iconVariant === 'member-list'
