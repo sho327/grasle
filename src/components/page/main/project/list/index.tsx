@@ -1,6 +1,6 @@
 'use client'
 // Modules
-import React from 'react'
+import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
 import {
     FolderOpen,
@@ -11,8 +11,13 @@ import {
     ListChecks,
     CheckCircle,
     Plus,
+    Search,
+    Filter,
+    ChevronDown,
+    ChevronUp,
+    X,
 } from 'lucide-react'
-import { formatDistanceToNowStrict } from 'date-fns'
+import { formatDistanceToNowStrict, subDays, subWeeks, subMonths } from 'date-fns'
 import { ja } from 'date-fns/locale'
 // Types
 import { ProjectWithDetails } from '@/lib/supabase/projectData'
@@ -28,7 +33,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-// import { Button } from '@/components/ui/button' // ボタンは今回は不要
+import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 // Layout/Components
 import PageHeader from '@/components/layout/parts/page-header'
 
@@ -67,10 +81,133 @@ const calculateProgress = (project: ProjectWithDetails) => {
  */
 export default function ProjectList({ projects }: ProjectListProps) {
     // ============================================================================
+    // 状態管理（State）
+    // ============================================================================
+    // フィルター状態
+    const [projectNameFilter, setProjectNameFilter] = useState('')
+    const [lastUpdatedFilter, setLastUpdatedFilter] = useState<string>('all')
+    const [favoriteFilter, setFavoriteFilter] = useState(false)
+    const [isFilterOpen, setIsFilterOpen] = useState(true)
+
+    // ページネーション状態
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 2 // 1ページあたりの件数
+
+    // フィルタークリア関数
+    const clearFilters = () => {
+        setProjectNameFilter('')
+        setLastUpdatedFilter('all')
+        setFavoriteFilter(false)
+    }
+
+    // フィルターが適用されているかチェック
+    const hasActiveFilters =
+        projectNameFilter.trim() !== '' || lastUpdatedFilter !== 'all' || favoriteFilter
+
+    // ============================================================================
     // 変数（Constant）
     // ============================================================================
-    // プロジェクトの件数を表示
-    const projectCount = projects.length
+    // お気に入り状態を仮で追加（ハリボテ）
+    const projectsWithFavorite = projects.map((project) => ({
+        ...project,
+        isFavorite: Math.random() > 0.5, // 仮のランダム値
+    }))
+
+    // フィルタリング処理
+    const filteredProjects = useMemo(() => {
+        let filtered = projectsWithFavorite
+
+        // プロジェクト名でフィルタリング
+        if (projectNameFilter.trim()) {
+            filtered = filtered.filter((project) =>
+                project.name.toLowerCase().includes(projectNameFilter.toLowerCase())
+            )
+        }
+
+        // 最終更新日でフィルタリング
+        if (lastUpdatedFilter !== 'all') {
+            const now = new Date()
+            let cutoffDate: Date
+
+            switch (lastUpdatedFilter) {
+                case 'today':
+                    cutoffDate = subDays(now, 1)
+                    break
+                case 'week':
+                    cutoffDate = subWeeks(now, 1)
+                    break
+                case 'month':
+                    cutoffDate = subMonths(now, 1)
+                    break
+                default:
+                    cutoffDate = new Date(0) // すべて
+            }
+
+            filtered = filtered.filter((project) => {
+                if (!project.updated_at) return false
+                const updatedAt = new Date(project.updated_at)
+                return updatedAt >= cutoffDate
+            })
+        }
+
+        // お気に入りでフィルタリング
+        if (favoriteFilter) {
+            filtered = filtered.filter((project) => project.isFavorite)
+        }
+
+        return filtered
+    }, [projectsWithFavorite, projectNameFilter, lastUpdatedFilter, favoriteFilter])
+
+    // ページネーション処理
+    const totalPages = Math.ceil(filteredProjects.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    const paginatedProjects = filteredProjects.slice(startIndex, endIndex)
+
+    // ページ番号の配列を生成（現在のページの前後を表示）
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = []
+        const maxVisiblePages = 5 // 表示する最大ページ数
+
+        if (totalPages <= maxVisiblePages) {
+            // ページ数が少ない場合は全ページを表示
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i)
+            }
+        } else {
+            // 現在のページの前後を表示
+            if (currentPage <= 3) {
+                // 最初の方
+                for (let i = 1; i <= 4; i++) {
+                    pages.push(i)
+                }
+                pages.push('...')
+                pages.push(totalPages)
+            } else if (currentPage >= totalPages - 2) {
+                // 最後の方
+                pages.push(1)
+                pages.push('...')
+                for (let i = totalPages - 3; i <= totalPages; i++) {
+                    pages.push(i)
+                }
+            } else {
+                // 中間
+                pages.push(1)
+                pages.push('...')
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                    pages.push(i)
+                }
+                pages.push('...')
+                pages.push(totalPages)
+            }
+        }
+        return pages
+    }
+
+    // フィルター変更時にページをリセット
+    React.useEffect(() => {
+        setCurrentPage(1)
+    }, [projectNameFilter, lastUpdatedFilter, favoriteFilter])
 
     // ============================================================================
     // テンプレート（コンポーネント描画処理）
@@ -91,15 +228,181 @@ export default function ProjectList({ projects }: ProjectListProps) {
                 </Button>
             </PageHeader>
 
+            {/* フィルターとページネーション */}
+            <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-4 shadow-xs">
+                {/* フィルターセクション */}
+                <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                    <div className="flex items-center justify-between">
+                        <CollapsibleTrigger asChild>
+                            <button className="flex items-center gap-2 text-sm text-slate-700 hover:text-slate-900">
+                                <Filter className="h-4 w-4" />
+                                <span>絞り込み</span>
+                                {isFilterOpen ? (
+                                    <ChevronUp className="h-4 w-4" />
+                                ) : (
+                                    <ChevronDown className="h-4 w-4" />
+                                )}
+                            </button>
+                        </CollapsibleTrigger>
+                        {hasActiveFilters && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={clearFilters}
+                                className="h-7 text-xs text-slate-600 hover:text-slate-900"
+                            >
+                                <X className="mr-1 h-3 w-3" />
+                                クリア
+                            </Button>
+                        )}
+                    </div>
+                    <CollapsibleContent className="mt-3">
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                            {/* プロジェクト名フィルター */}
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-slate-600">
+                                    プロジェクト名
+                                </label>
+                                <div className="relative">
+                                    <Search className="absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                    <Input
+                                        type="text"
+                                        placeholder="プロジェクト名で検索..."
+                                        value={projectNameFilter}
+                                        onChange={(e) => setProjectNameFilter(e.target.value)}
+                                        className="pl-8"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 最終更新日フィルター */}
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-slate-600">
+                                    最終更新日
+                                </label>
+                                <Select
+                                    value={lastUpdatedFilter}
+                                    onValueChange={setLastUpdatedFilter}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="期間を選択" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">すべて</SelectItem>
+                                        <SelectItem value="today">今日</SelectItem>
+                                        <SelectItem value="week">今週</SelectItem>
+                                        <SelectItem value="month">今月</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* お気に入りフィルター */}
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-slate-600">
+                                    お気に入り
+                                </label>
+                                <div className="flex items-center space-x-2 rounded-md border border-slate-200 px-3 py-2">
+                                    <Checkbox
+                                        id="favorite-filter"
+                                        checked={favoriteFilter}
+                                        onCheckedChange={(checked) =>
+                                            setFavoriteFilter(checked === true)
+                                        }
+                                    />
+                                    <label
+                                        htmlFor="favorite-filter"
+                                        className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                        お気に入りのみ表示
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
+
+                {/* ページネーションセクション */}
+                <div className="flex items-center justify-between border-t border-slate-200 pt-3">
+                    <div className="text-sm text-slate-600">
+                        {filteredProjects.length}件中 {startIndex + 1}〜
+                        {Math.min(endIndex, filteredProjects.length)}件を表示
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                        >
+                            最初
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                        >
+                            前へ
+                        </Button>
+                        <div className="flex items-center gap-1">
+                            {getPageNumbers().map((page, index) => {
+                                if (page === '...') {
+                                    return (
+                                        <span
+                                            key={`ellipsis-${index}`}
+                                            className="px-2 text-sm text-slate-400"
+                                        >
+                                            ...
+                                        </span>
+                                    )
+                                }
+                                const pageNum = page as number
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`h-8 min-w-8 rounded px-2 text-sm transition-colors ${
+                                            currentPage === pageNum
+                                                ? 'bg-slate-200 font-medium text-slate-900'
+                                                : 'text-slate-600 hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage >= totalPages}
+                        >
+                            次へ
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(totalPages)}
+                            disabled={currentPage >= totalPages || totalPages === 0}
+                        >
+                            最後
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {projects.map((project) => {
+                {paginatedProjects.map((project) => {
                     // 仮の進捗計算
                     const { totalTasks, completedTasks, progressValue } = calculateProgress(project)
                     // 最終更新からどれだけ時間が経過したかを計算 (date-fnsが必要)
-                    const updatedText = formatDistanceToNowStrict(new Date(project.updated_at), {
-                        addSuffix: true,
-                        locale: ja,
-                    })
+                    const updatedText = project.updated_at
+                        ? formatDistanceToNowStrict(new Date(project.updated_at), {
+                              addSuffix: true,
+                              locale: ja,
+                          })
+                        : '不明'
 
                     return (
                         <Card
@@ -120,9 +423,17 @@ export default function ProjectList({ projects }: ProjectListProps) {
                                         {/* お気に入りボタン */}
                                         <button
                                             type="button"
-                                            className="-mt-1 p-1 text-amber-500 transition-colors hover:text-amber-600"
+                                            className={`-mt-1 p-1 transition-colors ${
+                                                project.isFavorite
+                                                    ? 'text-amber-500 hover:text-amber-600'
+                                                    : 'text-slate-400 hover:text-amber-500'
+                                            }`}
                                         >
-                                            <Star className="h-4 w-4 fill-amber-500" />
+                                            <Star
+                                                className={`h-4 w-4 ${
+                                                    project.isFavorite ? 'fill-amber-500' : ''
+                                                }`}
+                                            />
                                         </button>
                                         {/* ドロップダウン */}
                                         <DropdownMenu>
@@ -173,13 +484,17 @@ export default function ProjectList({ projects }: ProjectListProps) {
                                     <div className="flex items-center gap-2 text-slate-600">
                                         <ListChecks className="text-muted h-4 w-4" />
                                         <span>
-                                            {project.completedTasks}/{project.totalTasks}タスク
+                                            {completedTasks}/{totalTasks}タスク
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2 text-slate-600">
                                         <Calendar className="h-4 w-4" />
                                         <span>
-                                            {new Date(project.dueDate).toLocaleDateString('ja-JP')}
+                                            {project.end_date
+                                                ? new Date(project.end_date).toLocaleDateString(
+                                                      'ja-JP'
+                                                  )
+                                                : '未設定'}
                                         </span>
                                     </div>
                                 </div>
