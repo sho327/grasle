@@ -2,8 +2,17 @@
 // Modules
 import React from 'react'
 import Link from 'next/link'
-import { FolderOpen, Star, Calendar, Users, MoreHorizontal, ListChecks } from 'lucide-react'
-import { formatDistanceToNowStrict } from 'date-fns' // // 🚨 更新日の表示に使う (要インストール: date-fns)
+import {
+    FolderOpen,
+    Star,
+    Calendar,
+    Users,
+    MoreHorizontal,
+    ListChecks,
+    CheckCircle,
+    Plus,
+} from 'lucide-react'
+import { formatDistanceToNowStrict } from 'date-fns'
 import { ja } from 'date-fns/locale'
 // Types
 import { ProjectWithDetails } from '@/lib/supabase/projectData'
@@ -75,9 +84,14 @@ export default function ProjectList({ projects }: ProjectListProps) {
                 pageTitle="プロジェクト一覧"
                 pageDescription="あなたが所属するプロジェクト一覧です。"
                 isBackButton={false}
-            />
+            >
+                <Button className="cursor-pointer rounded-lg shadow-sm">
+                    <Plus className="mr-1 h-4 w-4" />
+                    新規登録
+                </Button>
+            </PageHeader>
 
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {projects.map((project) => {
                     // 仮の進捗計算
                     const { totalTasks, completedTasks, progressValue } = calculateProgress(project)
@@ -90,26 +104,25 @@ export default function ProjectList({ projects }: ProjectListProps) {
                     return (
                         <Card
                             key={project.id}
-                            className="flex h-full flex-col rounded-lg border border-slate-200 bg-white pt-2 pb-1.5 shadow-xs transition-shadow hover:shadow-lg"
+                            className="flex h-full flex-col gap-4.5 rounded-lg border border-slate-200 bg-white pt-2 pb-1.5 shadow-xs transition-shadow hover:shadow-lg"
                         >
                             {/* カードボディ: 上部メタ情報/タイトル/説明 */}
-                            <div className="flex flex-grow flex-col px-4 py-4 pb-1.5">
+                            <div className="flex flex-grow flex-col px-4 pt-2.75">
                                 {/* 1. ヘッダー/メタ情報 (最終更新, お気に入り、ドロップダウン) */}
-                                <div className="mb-3.5 flex items-start justify-between">
+                                <div className="mb-3.75 flex items-start justify-between">
                                     <div className="flex-grow">
-                                        <p className="text-xs text-slate-500">
+                                        <p className="text-[.825rem] text-slate-500">
                                             最終更新: {updatedText}
                                         </p>
                                     </div>
                                     {/* お気に入り/ドロップダウン */}
                                     <div className="flex items-center gap-2">
-                                        {' '}
                                         {/* お気に入りボタン */}
                                         <button
                                             type="button"
                                             className="-mt-1 p-1 text-amber-500 transition-colors hover:text-amber-600"
                                         >
-                                            <Star className="h-4 w-4 fill-amber-500" />{' '}
+                                            <Star className="h-4 w-4 fill-amber-500" />
                                         </button>
                                         {/* ドロップダウン */}
                                         <DropdownMenu>
@@ -127,19 +140,19 @@ export default function ProjectList({ projects }: ProjectListProps) {
                                 <Link
                                     href={`/project/${project.id}/overview`}
                                     passHref
-                                    className="mb-1.5 flex min-h-0 flex-grow"
+                                    className="mb-1 flex min-h-0 flex-grow"
                                 >
                                     <div className="mr-3 flex-shrink-0">
                                         {/* アイコン/ロゴの代替 */}
-                                        <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded p-1">
+                                        <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded p-1">
                                             <FolderOpen className="text-primary h-6 w-6" />
                                         </div>
                                     </div>
                                     <div className="min-w-0 flex-grow">
-                                        <CardTitle className="hover:text-primary mb-1 line-clamp-2 text-base font-semibold text-slate-900 transition-colors">
+                                        <CardTitle className="hover:text-primary mb-0.5 line-clamp-2 text-[1.065rem] font-semibold text-slate-900 transition-colors">
                                             {project.name}
                                         </CardTitle>
-                                        <CardDescription className="line-clamp-2 text-xs text-slate-500">
+                                        <CardDescription className="line-clamp-2 text-[.875rem] text-slate-500">
                                             {project.description}
                                         </CardDescription>
                                     </div>
@@ -147,55 +160,61 @@ export default function ProjectList({ projects }: ProjectListProps) {
 
                                 {/* 3. 進捗状況 (Progress) */}
                                 <div className="mt-auto pt-2">
-                                    <div className="mb-1.5 flex items-center justify-between text-xs">
-                                        {' '}
+                                    <div className="mb-1.5 flex items-center justify-start text-xs">
                                         <div className="text-slate-600">進捗率</div>
-                                        <div className="flex items-center text-slate-600">
-                                            <ListChecks className="text-muted mr-1 h-4 w-4" />{' '}
-                                            {completedTasks}/{totalTasks}
-                                        </div>
                                     </div>
                                     <Progress value={progressValue} className="h-1.5 bg-gray-200">
                                         {/* Progressコンポーネントが背景とバーを制御 */}
                                     </Progress>
                                 </div>
+
+                                {/* タスクと期限 */}
+                                <div className="flex items-center justify-between pt-2 text-xs text-gray-600">
+                                    <div className="flex items-center gap-2 text-slate-600">
+                                        <ListChecks className="text-muted h-4 w-4" />
+                                        <span>
+                                            {project.completedTasks}/{project.totalTasks}タスク
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-slate-600">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>
+                                            {new Date(project.dueDate).toLocaleDateString('ja-JP')}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Card Footer: アバターと期日 */}
                             <div className="mb-2 border-t border-dashed border-slate-200 px-4 pt-2">
+                                {/* メンバー */}
                                 <div className="flex items-center justify-between">
-                                    {/* 1. アバターグループ (メンバーシップ) */}
-                                    <div className="flex-grow">
-                                        <div className="flex -space-x-1.5">
-                                            {' '}
-                                            <Avatar className="h-7 w-7 border-2 border-white">
-                                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                                                    K
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <Avatar className="h-7 w-7 border-2 border-white">
-                                                <AvatarFallback className="bg-green-100 text-xs text-green-700">
-                                                    S
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="border-primary bg-light text-primary hover:bg-primary-50 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 border-dashed text-xs transition-colors">
-                                                +
-                                            </div>
-                                        </div>
+                                    {/* メンバー数 */}
+                                    <div className="flex items-center gap-2">
+                                        <Users className="h-4 w-4 text-gray-600" />
+                                        <span className="text-[0.835rem] text-gray-600">10人</span>
                                     </div>
-
-                                    {/* 2. 期日 */}
-                                    <div className="text-muted flex-shrink-0 text-xs text-slate-600">
-                                        <Calendar className="mr-1 inline h-4 w-4 align-bottom" />{' '}
-                                        {project.end_date
-                                            ? new Date(project.end_date)
-                                                  .toLocaleDateString('ja-JP', {
-                                                      year: 'numeric',
-                                                      month: 'short',
-                                                      day: 'numeric',
-                                                  })
-                                                  .replace(/\//g, ' ')
-                                            : '期日未定'}
+                                    {/* メンバーアイコン */}
+                                    <div className="flex -space-x-1.5">
+                                        <Avatar className="h-7 w-7 border-2 border-white">
+                                            <AvatarImage src={'/placeholder.svg'} alt={''} />
+                                            <AvatarFallback className="bg-gray-100 text-xs font-medium">
+                                                {/* <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium"> */}
+                                                K
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <Avatar className="h-7 w-7 border-2 border-white">
+                                            <AvatarImage src={'/placeholder.svg'} alt={''} />
+                                            {/* <AvatarFallback className="bg-gray-100 text-xs font-medium"> */}
+                                            <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+                                                S
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-100">
+                                            <span className="text-xs font-medium text-gray-600">
+                                                +10
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
