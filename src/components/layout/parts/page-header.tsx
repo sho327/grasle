@@ -87,10 +87,10 @@ export default function PageHeader({
                         </div>
                     )}
                     <div>
-                        <h1 className="text-foreground text-xl font-semibold sm:text-2xl">
+                        <h1 className="text-foreground text-xl font-semibold sm:text-[1.35rem]">
                             {pageTitle}
                         </h1>
-                        <p className="text-muted-foreground mt-1 text-sm">{pageDescription}</p>
+                        <p className="text-muted-foreground mt-0.75 text-sm">{pageDescription}</p>
                     </div>
                 </div>
                 {/* 作成ボタンがある場合等は、各自childrenにてページ側で設定 */}

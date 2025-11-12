@@ -60,7 +60,7 @@ interface ProjectListProps {
 // ProjectWithDetails には tasks: TaskCount[] が含まれているが、ここでは仮の進捗データを使用
 // 実際にはタスクテーブルから完了/合計件数を取得する必要があります
 const calculateProgress = (project: ProjectWithDetails) => {
-    // ⚠️ 暫定値: tasks: [{ count: N }] はタスクの総件数のみの場合があるため、ここでは仮の進捗率を計算
+    // tasks: [{ count: N }] はタスクの総件数のみの場合があるため、ここでは仮の進捗率を計算
     // 実際のアプリケーションでは、タスクテーブルから完了したタスクの数を取得して進捗率を計算してください。
 
     // 仮にタスク総数を取得
@@ -216,6 +216,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
     // ============================================================================
     return (
         <div className="mx-auto max-w-7xl space-y-6">
+            {/* // <div className="mx-auto max-w-7xl space-y-4 rounded-xl bg-white p-4 sm:p-6.5"> */}
             <PageHeader
                 Icon={FolderOpen}
                 // iconVariant="project-list"
@@ -225,7 +226,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
                 isBackButton={false}
             />
 
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mt-7s mb-3 flex items-center justify-between">
                 <div className="flex gap-1.5">
                     {/* プロジェクト名フィルター */}
                     <div className="space-y-1.5">
@@ -314,7 +315,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
                         size="sm"
                         onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                         disabled={currentPage >= totalPages}
-                        className="ms-1 bg-white"
+                        className="hover:bg-primary/10 ms-1 cursor-pointer bg-white hover:text-slate-600"
                     >
                         {/* {'>'} */}
                         <ChevronRight />
@@ -353,12 +354,12 @@ export default function ProjectList({ projects }: ProjectListProps) {
                     return (
                         <Card
                             key={project.id}
-                            className="flex h-full flex-col gap-4.5 rounded-lg border border-slate-200 bg-white pt-2 pb-1.5 shadow-xs transition-shadow hover:shadow-lg"
+                            className="flex h-full flex-col gap-4 rounded-lg border border-slate-200 bg-white pt-2 pb-1.25 shadow-xs transition-shadow hover:shadow-lg"
                         >
                             {/* カードボディ: 上部メタ情報/タイトル/説明 */}
                             <div className="flex flex-grow flex-col px-4 pt-2.75">
                                 {/* 1. ヘッダー/メタ情報 (最終更新, お気に入り、ドロップダウン) */}
-                                <div className="mb-3.75 flex items-start justify-between">
+                                <div className="mb-3.5 flex items-start justify-between">
                                     <div className="flex-grow">
                                         <p className="text-[.825rem] text-slate-500">
                                             最終更新: {updatedText}
@@ -399,7 +400,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
                                     passHref
                                     className="mb-1 flex min-h-0 flex-grow"
                                 >
-                                    <div className="mr-3 flex-shrink-0">
+                                    <div className="mr-3.5 flex-shrink-0">
                                         {/* アイコン/ロゴの代替 */}
                                         <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded p-1">
                                             <FolderOpen className="text-primary h-6 w-6" />
@@ -416,7 +417,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
                                 </Link>
 
                                 {/* 3. 進捗状況 (Progress) */}
-                                <div className="mt-auto pt-2">
+                                <div className="mt-auto pt-1.75">
                                     <div className="mb-1.5 flex items-center justify-start text-xs">
                                         <div className="text-slate-600">進捗率</div>
                                     </div>
@@ -447,7 +448,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
                             </div>
 
                             {/* Card Footer: アバターと期日 */}
-                            <div className="mb-2 border-t border-dashed border-slate-200 px-4 pt-2">
+                            <div className="mb-1.75 border-t border-dashed border-slate-200 px-4 pt-2">
                                 {/* メンバー */}
                                 <div className="flex items-center justify-between">
                                     {/* メンバー数 */}
